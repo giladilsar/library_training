@@ -24,11 +24,13 @@ func searchRequestBuilder(c *gin.Context) (*searchRequest, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	toPriceStr := c.DefaultQuery("to_price", strconv.Itoa(math.MaxInt))
 	toPrice, err := strconv.Atoi(toPriceStr)
 	if err != nil {
 		return nil, err
 	}
+
 	req := searchRequest{
 		Title: c.DefaultQuery("title", ""),
 		Name:  c.DefaultQuery("author_name", ""),
