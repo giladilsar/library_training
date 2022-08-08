@@ -68,3 +68,20 @@ func createBookFromPayload(es *elastic.Client, req *createBookRequest) (*createB
 
 	return &createBookResponse{res.Id}, nil
 }
+
+func updateBook(es *elastic.Client, req *updateBookRequest) error {
+	ctx, cancel := getContext()
+	defer cancel()
+
+	_, err := es.Update().
+		Index(IndexName).
+		Id(req.Id).
+		Doc(updateBookTitleCommand{req.Title}).
+		Do(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

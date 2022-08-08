@@ -42,5 +42,21 @@ func CreateBook(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response)
+}
 
+func UpdateBookTitle(c *gin.Context) {
+	req := &updateBookRequest{}
+
+	if err := c.ShouldBindWith(&req, binding.JSON); err != nil {
+		c.String(http.StatusBadRequest, "failed to bind request - invalid request. %s", err.Error())
+		return
+	}
+
+	err := updateBook(config.ElasticClient, req)
+	if err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, "OK")
 }
