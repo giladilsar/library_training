@@ -1,22 +1,17 @@
 package books
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"gin/models"
+	"gin/searchHelper"
 	"github.com/olivere/elastic/v7"
-	"time"
 )
 
 const IndexName = "gilad_books"
 
-func getContext() (context.Context, context.CancelFunc) {
-	return context.WithTimeout(context.Background(), 1000*time.Second)
-}
-
 func getBook(es *elastic.Client, id string) (*models.Book, error) {
-	ctx, cancel := getContext()
+	ctx, cancel := searchHelper.GetContext()
 	defer cancel()
 
 	searchResults, err := es.Get().
@@ -42,20 +37,15 @@ func getBook(es *elastic.Client, id string) (*models.Book, error) {
 }
 
 func createBookFromPayload(es *elastic.Client, req *createBookRequest) (*createBookResponse, error) {
-	ctx, cancel := getContext()
+	ctx, cancel := searchHelper.GetContext()
 	defer cancel()
-
-	publishDate, parseError := time.Parse("2006-01-02", req.PublishDate)
-	if parseError != nil {
-		return nil, parseError
-	}
 
 	bookToSave := models.Book{
 		Title:          req.Title,
 		Name:           req.Name,
 		Price:          req.Price,
 		EbookAvailable: req.EbookAvailable,
-		PublishDate:    publishDate,
+		PublishDate:    req.PublishDate,
 	}
 	res, err := es.Index().
 		Index(IndexName).
@@ -70,7 +60,7 @@ func createBookFromPayload(es *elastic.Client, req *createBookRequest) (*createB
 }
 
 func updateBook(es *elastic.Client, req *updateBookRequest) error {
-	ctx, cancel := getContext()
+	ctx, cancel := searchHelper.GetContext()
 	defer cancel()
 
 	_, err := es.Update().

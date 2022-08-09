@@ -2,13 +2,13 @@ package bookSearch
 
 import (
 	"fmt"
+	"gin/config"
 	"github.com/gin-gonic/gin"
-	"math"
 	"net/http"
 )
 
-func validateSearchRequest(req *searchRequest) error {
-	if req.Title == "" && req.Name == "" && req.PriceRange.From == 0 && req.PriceRange.To == math.MaxInt {
+func validateSearchRequest(req *bookSearchRequest) error {
+	if req.Title == "" && req.Name == "" && !(req.containsPriceFilter()) {
 		return fmt.Errorf("request must contain at least one filter")
 	}
 
@@ -27,5 +27,11 @@ func SearchBook(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, "OK")
+	books, err := searchBooks(config.ElasticClient, req)
+	if err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, books)
 }

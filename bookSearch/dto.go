@@ -11,14 +11,18 @@ type priceRange struct {
 	To   int
 }
 
-type searchRequest struct {
+type bookSearchRequest struct {
 	Title      string
 	Name       string
 	PriceRange priceRange
 	Username   string
 }
 
-func searchRequestBuilder(c *gin.Context) (*searchRequest, error) {
+func (req *bookSearchRequest) containsPriceFilter() bool {
+	return req.PriceRange.To < math.MaxInt || req.PriceRange.From > 0
+}
+
+func searchRequestBuilder(c *gin.Context) (*bookSearchRequest, error) {
 	fromPriceStr := c.DefaultQuery("from_price", "0")
 	fromPrice, err := strconv.Atoi(fromPriceStr)
 	if err != nil {
@@ -31,7 +35,7 @@ func searchRequestBuilder(c *gin.Context) (*searchRequest, error) {
 		return nil, err
 	}
 
-	req := searchRequest{
+	req := bookSearchRequest{
 		Title: c.DefaultQuery("title", ""),
 		Name:  c.DefaultQuery("author_name", ""),
 		PriceRange: priceRange{

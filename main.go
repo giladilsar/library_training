@@ -19,7 +19,7 @@ func main() {
 	router.PUT("/books", books.CreateBook)
 	router.POST("/books", books.UpdateBookTitle)
 	// Search
-	router.GET("/bookSearch", bookSearch.SearchBook)
+	router.GET("/search", bookSearch.SearchBook)
 
 	router.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
