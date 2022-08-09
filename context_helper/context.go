@@ -1,4 +1,4 @@
-package searchHelper
+package context_helper
 
 import (
 	"context"

@@ -1,4 +1,4 @@
-package bookSearch
+package books_search
 
 import (
 	"github.com/gin-gonic/gin"

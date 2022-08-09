@@ -1,8 +1,8 @@
 package main
 
 import (
-	"gin/bookSearch"
 	"gin/books"
+	"gin/books_search"
 	"gin/config"
 	"gin/health"
 	"github.com/gin-gonic/gin"
@@ -19,7 +19,7 @@ func main() {
 	router.PUT("/books", books.CreateBook)
 	router.POST("/books", books.UpdateBookTitle)
 	// Search
-	router.GET("/search", bookSearch.SearchBook)
+	router.GET("/search", books_search.SearchBook)
 
 	router.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

@@ -3,15 +3,15 @@ package books
 import (
 	"encoding/json"
 	"fmt"
+	"gin/context_helper"
 	"gin/models"
-	"gin/searchHelper"
 	"github.com/olivere/elastic/v7"
 )
 
 const IndexName = "gilad_books"
 
 func getBook(es *elastic.Client, id string) (*models.Book, error) {
-	ctx, cancel := searchHelper.GetContext()
+	ctx, cancel := context_helper.GetContext()
 	defer cancel()
 
 	searchResults, err := es.Get().
@@ -37,7 +37,7 @@ func getBook(es *elastic.Client, id string) (*models.Book, error) {
 }
 
 func createBookFromPayload(es *elastic.Client, req *createBookRequest) (*createBookResponse, error) {
-	ctx, cancel := searchHelper.GetContext()
+	ctx, cancel := context_helper.GetContext()
 	defer cancel()
 
 	bookToSave := models.Book{
@@ -60,7 +60,7 @@ func createBookFromPayload(es *elastic.Client, req *createBookRequest) (*createB
 }
 
 func updateBook(es *elastic.Client, req *updateBookRequest) error {
-	ctx, cancel := searchHelper.GetContext()
+	ctx, cancel := context_helper.GetContext()
 	defer cancel()
 
 	_, err := es.Update().

@@ -1,16 +1,16 @@
-package bookSearch
+package books_search
 
 import (
 	"encoding/json"
+	"gin/context_helper"
 	"gin/models"
-	"gin/searchHelper"
 	"github.com/olivere/elastic/v7"
 )
 
 const IndexName = "gilad_books"
 
 func searchBooks(es *elastic.Client, req *bookSearchRequest) ([]models.Book, error) {
-	ctx, cancel := searchHelper.GetContext()
+	ctx, cancel := context_helper.GetContext()
 	defer cancel()
 
 	query := elastic.NewBoolQuery()
