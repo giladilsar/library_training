@@ -36,6 +36,18 @@ func getBook(es *elastic.Client, id string) (*models.Book, error) {
 	return &book, nil
 }
 
+func deleteBookById(es *elastic.Client, id string) error {
+	ctx, cancel := context_helper.GetContext()
+	defer cancel()
+
+	_, err := es.Delete().
+		Index(IndexName).
+		Id(id).
+		Do(ctx)
+
+	return err
+}
+
 func createBookFromPayload(es *elastic.Client, req *createBookRequest) (*createBookResponse, error) {
 	ctx, cancel := context_helper.GetContext()
 	defer cancel()

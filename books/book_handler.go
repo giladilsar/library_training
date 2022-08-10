@@ -7,24 +7,34 @@ import (
 	"net/http"
 )
 
-func getBookValidator(id string, username string) bool {
-	return id != "" && username != ""
-}
-
 func GetBookById(c *gin.Context) {
-	id := c.DefaultQuery("id", "")
-	username := c.DefaultQuery("username", "")
-	if !getBookValidator(id, username) {
-		c.String(http.StatusBadRequest, "id and username must be provided.")
+	id := c.Param("id")
+	if id == "" {
+		c.String(http.StatusBadRequest, "id must be provided.")
 		return
 	}
 	book, err := getBook(config.ElasticClient, id)
 	if err != nil {
-		c.String(http.StatusBadRequest, err.Error())
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	c.JSON(http.StatusOK, book)
+}
+
+func DeleteBook(c *gin.Context) {
+	id := c.Param("id")
+	if id == "" {
+		c.String(http.StatusBadRequest, "id must be provided.")
+		return
+	}
+	err := deleteBookById(config.ElasticClient, id)
+	if err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, "OK")
 }
 
 func CreateBook(c *gin.Context) {
@@ -45,7 +55,8 @@ func CreateBook(c *gin.Context) {
 }
 
 func UpdateBookTitle(c *gin.Context) {
-	req := &updateBookRequest{}
+	id := c.Param("id")
+	req := &updateBookRequest{Id: id}
 
 	if err := c.ShouldBindWith(&req, binding.JSON); err != nil {
 		c.String(http.StatusBadRequest, "failed to bind request - invalid request. %s", err.Error())
