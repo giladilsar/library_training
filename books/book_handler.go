@@ -1,6 +1,7 @@
 package books
 
 import (
+	"fmt"
 	"gin/config"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -10,12 +11,12 @@ import (
 func GetBookById(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {
-		c.String(http.StatusBadRequest, "id must be provided.")
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("id must be provided"))
 		return
 	}
 	book, err := getBook(config.ElasticClient, id)
 	if err != nil {
-		c.String(http.StatusInternalServerError, err.Error())
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
@@ -25,12 +26,12 @@ func GetBookById(c *gin.Context) {
 func DeleteBook(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {
-		c.String(http.StatusBadRequest, "id must be provided.")
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("id must be provided"))
 		return
 	}
 	err := deleteBookById(config.ElasticClient, id)
 	if err != nil {
-		c.String(http.StatusInternalServerError, err.Error())
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
@@ -41,13 +42,13 @@ func CreateBook(c *gin.Context) {
 	req := &createBookRequest{}
 
 	if err := c.ShouldBindWith(&req, binding.JSON); err != nil {
-		c.String(http.StatusBadRequest, "failed to bind request - invalid request. %s", err.Error())
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to bind request - invalid request. %s", err.Error()))
 		return
 	}
 
 	response, indexErr := createBookFromPayload(config.ElasticClient, req)
 	if indexErr != nil {
-		c.String(http.StatusInternalServerError, indexErr.Error())
+		c.AbortWithError(http.StatusInternalServerError, indexErr)
 		return
 	}
 
@@ -59,13 +60,13 @@ func UpdateBookTitle(c *gin.Context) {
 	req := &updateBookRequest{Id: id}
 
 	if err := c.ShouldBindWith(&req, binding.JSON); err != nil {
-		c.String(http.StatusBadRequest, "failed to bind request - invalid request. %s", err.Error())
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to bind request - invalid request. %s", err.Error()))
 		return
 	}
 
 	err := updateBook(config.ElasticClient, req)
 	if err != nil {
-		c.String(http.StatusInternalServerError, err.Error())
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 

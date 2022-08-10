@@ -19,17 +19,17 @@ func SearchBook(c *gin.Context) {
 	req, err := searchRequestBuilder(c)
 
 	if err != nil {
-		c.String(http.StatusBadRequest, err.Error())
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	if validationError := validateSearchRequest(req); validationError != nil {
-		c.String(http.StatusBadRequest, validationError.Error())
+		c.AbortWithError(http.StatusBadRequest, validationError)
 		return
 	}
 
 	books, err := searchBooks(config.ElasticClient, req)
 	if err != nil {
-		c.String(http.StatusInternalServerError, err.Error())
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
