@@ -1,13 +1,13 @@
 package server
 
 import (
-	"gin/activity"
-	"gin/books"
-	"gin/books_search"
 	"gin/config"
-	"gin/health"
 	"gin/server/middleware"
-	"gin/store"
+	"gin/service/activity"
+	"gin/service/books"
+	"gin/service/books_search"
+	"gin/service/health"
+	"gin/service/store"
 	"github.com/gin-gonic/gin"
 )
 
