@@ -2,7 +2,6 @@ package books_search
 
 import (
 	"github.com/gin-gonic/gin"
-	"math"
 	"strconv"
 )
 
@@ -19,7 +18,7 @@ type bookSearchRequest struct {
 }
 
 func (req *bookSearchRequest) containsPriceFilter() bool {
-	return req.PriceRange.To < math.MaxInt || req.PriceRange.From > 0
+	return req.PriceRange.To > 0 || req.PriceRange.From > 0
 }
 
 func searchRequestBuilder(c *gin.Context) (*bookSearchRequest, error) {
@@ -29,7 +28,7 @@ func searchRequestBuilder(c *gin.Context) (*bookSearchRequest, error) {
 		return nil, err
 	}
 
-	toPriceStr := c.DefaultQuery("to_price", strconv.Itoa(math.MaxInt))
+	toPriceStr := c.DefaultQuery("to_price", "0")
 	toPrice, err := strconv.Atoi(toPriceStr)
 	if err != nil {
 		return nil, err

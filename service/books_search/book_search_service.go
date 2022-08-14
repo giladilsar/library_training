@@ -15,7 +15,13 @@ func searchBooks(es *elastic.Client, req *bookSearchRequest) ([]models.Book, err
 
 	query := elastic.NewBoolQuery()
 	if req.containsPriceFilter() {
-		priceRangeQuery := elastic.NewRangeQuery("price").Gte(req.PriceRange.From).Lte(req.PriceRange.To)
+		priceRangeQuery := elastic.NewRangeQuery("price")
+		if req.PriceRange.From != 0 {
+			priceRangeQuery = priceRangeQuery.Gte(req.PriceRange.From)
+		}
+		if req.PriceRange.To != 0 {
+			priceRangeQuery = priceRangeQuery.Lte(req.PriceRange.To)
+		}
 		query = query.Must(priceRangeQuery)
 	}
 	if req.Title != "" {
