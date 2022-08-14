@@ -21,7 +21,7 @@ func fetchStoreDate(es *elastic.Client) (gin.H, error) {
 		Index("gilad_books").
 		Aggregation("authors",
 			elastic.NewCardinalityAggregation().
-				Field("name.keyword")).
+				Field("author_name.keyword")).
 		Do(ctx)
 	if err != nil {
 		return nil, err

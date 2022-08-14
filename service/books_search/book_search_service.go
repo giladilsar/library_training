@@ -28,7 +28,7 @@ func searchBooks(es *elastic.Client, req *bookSearchRequest) ([]models.Book, err
 		query = query.Must(elastic.NewTermQuery("title", req.Title))
 	}
 	if req.AuthorName != "" {
-		query = query.Must(elastic.NewMatchQuery("name", req.AuthorName))
+		query = query.Must(elastic.NewMatchQuery("author_name", req.AuthorName))
 	}
 
 	searchResult, err := es.Search().
