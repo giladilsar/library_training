@@ -3,12 +3,13 @@ package books_search
 import (
 	"fmt"
 	"gin/config"
+	"gin/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 func validateSearchRequest(req *bookSearchRequest) error {
-	if req.Title == "" && req.Name == "" && !(req.containsPriceFilter()) {
+	if req.Title == "" && req.AuthorName == "" && !(req.containsPriceFilter()) {
 		return fmt.Errorf("request must contain at least one filter")
 	}
 
@@ -19,17 +20,17 @@ func SearchBook(c *gin.Context) {
 	req, err := searchRequestBuilder(c)
 
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.JSON(http.StatusBadRequest, gin.H{"Error": err.Error()})
 		return
 	}
 	if validationError := validateSearchRequest(req); validationError != nil {
-		c.AbortWithError(http.StatusBadRequest, validationError)
+		c.JSON(http.StatusBadRequest, gin.H{"Error": validationError.Error()})
 		return
 	}
 
 	books, err := searchBooks(config.ElasticClient, req)
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.JSON(utils.GetErrorResponseStatus(err), gin.H{"Error": err.Error()})
 		return
 	}
 

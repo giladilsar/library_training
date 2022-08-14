@@ -3,7 +3,7 @@ package books
 import (
 	"fmt"
 	"gin/config"
-	"gin/context_helper"
+	"gin/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"net/http"
@@ -13,7 +13,7 @@ func GetBook(c *gin.Context) {
 	id := c.Param("id")
 	book, err := getBook(config.ElasticClient, id)
 	if err != nil {
-		c.JSON(context_helper.GetErrorResponseStatus(err), gin.H{"Error": err})
+		c.JSON(utils.GetErrorResponseStatus(err), gin.H{"Error": err.Error()})
 		return
 	}
 
@@ -28,7 +28,7 @@ func DeleteBook(c *gin.Context) {
 	}
 	err := deleteBookById(config.ElasticClient, id)
 	if err != nil {
-		c.JSON(context_helper.GetErrorResponseStatus(err), gin.H{"Error": err})
+		c.JSON(utils.GetErrorResponseStatus(err), gin.H{"Error": err.Error()})
 		return
 	}
 
@@ -44,7 +44,7 @@ func CreateBook(c *gin.Context) {
 
 	response, indexErr := createBookFromPayload(config.ElasticClient, req)
 	if indexErr != nil {
-		c.JSON(context_helper.GetErrorResponseStatus(indexErr), gin.H{"Error": indexErr})
+		c.JSON(utils.GetErrorResponseStatus(indexErr), gin.H{"Error": indexErr.Error()})
 		return
 	}
 
@@ -62,7 +62,7 @@ func UpdateBookTitle(c *gin.Context) {
 
 	err := updateBook(config.ElasticClient, req)
 	if err != nil {
-		c.JSON(context_helper.GetErrorResponseStatus(err), gin.H{"Error": err})
+		c.JSON(utils.GetErrorResponseStatus(err), gin.H{"Error": err.Error()})
 		return
 	}
 

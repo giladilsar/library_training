@@ -13,7 +13,7 @@ type priceRange struct {
 
 type bookSearchRequest struct {
 	Title      string
-	Name       string
+	AuthorName string
 	PriceRange priceRange
 	Username   string
 }
@@ -36,8 +36,8 @@ func searchRequestBuilder(c *gin.Context) (*bookSearchRequest, error) {
 	}
 
 	req := bookSearchRequest{
-		Title: c.DefaultQuery("title", ""),
-		Name:  c.DefaultQuery("author_name", ""),
+		Title:      c.DefaultQuery("title", ""),
+		AuthorName: c.DefaultQuery("author_name", ""),
 		PriceRange: priceRange{
 			From: fromPrice,
 			To:   toPrice,

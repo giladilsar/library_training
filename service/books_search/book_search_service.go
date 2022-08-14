@@ -2,15 +2,15 @@ package books_search
 
 import (
 	"encoding/json"
-	"gin/context_helper"
 	"gin/models"
+	"gin/utils"
 	"github.com/olivere/elastic/v7"
 )
 
 const IndexName = "gilad_books"
 
 func searchBooks(es *elastic.Client, req *bookSearchRequest) ([]models.Book, error) {
-	ctx, cancel := context_helper.GetContext()
+	ctx, cancel := utils.GetContext()
 	defer cancel()
 
 	query := elastic.NewBoolQuery()
@@ -21,8 +21,8 @@ func searchBooks(es *elastic.Client, req *bookSearchRequest) ([]models.Book, err
 	if req.Title != "" {
 		query = query.Must(elastic.NewTermQuery("title", req.Title))
 	}
-	if req.Name != "" {
-		query = query.Must(elastic.NewMatchQuery("name", req.Name))
+	if req.AuthorName != "" {
+		query = query.Must(elastic.NewMatchQuery("name", req.AuthorName))
 	}
 
 	searchResult, err := es.Search().

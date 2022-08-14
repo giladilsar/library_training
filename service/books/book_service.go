@@ -3,8 +3,8 @@ package books
 import (
 	"encoding/json"
 	"fmt"
-	"gin/context_helper"
 	"gin/models"
+	"gin/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/olivere/elastic/v7"
 )
@@ -12,7 +12,7 @@ import (
 const IndexName = "gilad_books"
 
 func getBook(es *elastic.Client, id string) (*models.Book, error) {
-	ctx, cancel := context_helper.GetContext()
+	ctx, cancel := utils.GetContext()
 	defer cancel()
 
 	searchResults, err := es.Get().
@@ -38,7 +38,7 @@ func getBook(es *elastic.Client, id string) (*models.Book, error) {
 }
 
 func deleteBookById(es *elastic.Client, id string) error {
-	ctx, cancel := context_helper.GetContext()
+	ctx, cancel := utils.GetContext()
 	defer cancel()
 
 	_, err := es.Delete().
@@ -50,12 +50,12 @@ func deleteBookById(es *elastic.Client, id string) error {
 }
 
 func createBookFromPayload(es *elastic.Client, req *createBookRequest) (gin.H, error) {
-	ctx, cancel := context_helper.GetContext()
+	ctx, cancel := utils.GetContext()
 	defer cancel()
 
 	bookToSave := models.Book{
 		Title:          req.Title,
-		Name:           req.Name,
+		AuthorName:     req.AuthorName,
 		Price:          req.Price,
 		EbookAvailable: req.EbookAvailable,
 		PublishDate:    req.PublishDate,
@@ -73,7 +73,7 @@ func createBookFromPayload(es *elastic.Client, req *createBookRequest) (gin.H, e
 }
 
 func updateBook(es *elastic.Client, req *updateBookRequest) error {
-	ctx, cancel := context_helper.GetContext()
+	ctx, cancel := utils.GetContext()
 	defer cancel()
 
 	_, err := es.Update().

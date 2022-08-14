@@ -1,15 +1,18 @@
 package store
 
 import (
-	"gin/context_helper"
+	"gin/utils"
+	"github.com/gin-gonic/gin"
 	"github.com/olivere/elastic/v7"
 )
 
-func fetchStoreDate(es *elastic.Client) (*fetchStoreResponse, error) {
-	ctx, cancel := context_helper.GetContext()
+const indexName = "gilad_books"
+
+func fetchStoreDate(es *elastic.Client) (gin.H, error) {
+	ctx, cancel := utils.GetContext()
 	defer cancel()
 
-	countResponse, err := es.Count().Index("gilad_books").Do(ctx)
+	countResponse, err := es.Count().Index(indexName).Do(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -24,5 +27,5 @@ func fetchStoreDate(es *elastic.Client) (*fetchStoreResponse, error) {
 		return nil, err
 	}
 	cardinalityValue, _ := cardRes.Aggregations.Cardinality("authors")
-	return &fetchStoreResponse{NumOfBooks: countResponse, NumOfAuthors: *cardinalityValue.Value}, nil
+	return gin.H{"number_of_books": countResponse, "number_of_authors": *cardinalityValue.Value}, nil
 }
