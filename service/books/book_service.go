@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"gin/context_helper"
 	"gin/models"
+	"github.com/gin-gonic/gin"
 	"github.com/olivere/elastic/v7"
 )
 
@@ -28,8 +29,8 @@ func getBook(es *elastic.Client, id string) (*models.Book, error) {
 	}
 
 	book := models.Book{Id: id}
-	jsonError := json.Unmarshal(searchResults.Source, &book)
-	if jsonError != nil {
+	err = json.Unmarshal(searchResults.Source, &book)
+	if err != nil {
 		return nil, err
 	}
 
@@ -48,7 +49,7 @@ func deleteBookById(es *elastic.Client, id string) error {
 	return err
 }
 
-func createBookFromPayload(es *elastic.Client, req *createBookRequest) (*createBookResponse, error) {
+func createBookFromPayload(es *elastic.Client, req *createBookRequest) (gin.H, error) {
 	ctx, cancel := context_helper.GetContext()
 	defer cancel()
 
@@ -68,7 +69,7 @@ func createBookFromPayload(es *elastic.Client, req *createBookRequest) (*createB
 		return nil, err
 	}
 
-	return &createBookResponse{res.Id}, nil
+	return gin.H{"Id": res.Id}, nil
 }
 
 func updateBook(es *elastic.Client, req *updateBookRequest) error {

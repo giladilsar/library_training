@@ -18,15 +18,15 @@ func SetupRoutes() *gin.Engine {
 
 	cachedRequests := router.Group("/")
 	cachedRequests.Use(middleware.CacheRequest(config.RedisClient))
-	{ // Books
-		cachedRequests.GET("/books/:id", books.GetBookById)
-		cachedRequests.PUT("/books", books.CreateBook)
-		cachedRequests.POST("/books/:id", books.UpdateBookTitle)
-		cachedRequests.DELETE("/books/:id", books.DeleteBook)
-		// Search
+	{
+		cachedRequests.GET("/book/:id", books.GetBook)
+		cachedRequests.PUT("/book", books.CreateBook)
+		cachedRequests.POST("/book/:id", books.UpdateBookTitle)
+		cachedRequests.DELETE("/book/:id", books.DeleteBook)
+
 		cachedRequests.GET("/search", books_search.SearchBook)
-		// Store
-		cachedRequests.GET("/store", store.GetStore)
+
+		cachedRequests.GET("/store", store.GetStoreInfo)
 	}
 	router.GET("/activity/:username", activity.GetActivityByUsername)
 

@@ -8,10 +8,6 @@ type createBookRequest struct {
 	PublishDate    string  `json:"publish_date" binding:"required"`
 }
 
-type createBookResponse struct {
-	Id string `json:"id"`
-}
-
 type updateBookRequest struct {
 	Id    string
 	Title string `json:"title" binding:"required"`

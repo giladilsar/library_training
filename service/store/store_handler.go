@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func GetStore(c *gin.Context) {
+func GetStoreInfo(c *gin.Context) {
 	res, err := fetchStoreDate(config.ElasticClient)
 	if err != nil {
 		c.String(http.StatusInternalServerError, err.Error())

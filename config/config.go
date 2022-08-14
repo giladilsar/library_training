@@ -10,6 +10,11 @@ var (
 	RedisClient   *redis.Client
 )
 
+const (
+	elasticConnectionUrl = "http://es-search-7.fiverrdev.com:9200"
+	redisConnectionUrl   = "redis.default.fiverrdev.com:6382"
+)
+
 func setupElastic(sourceIndexURL string) *elastic.Client {
 	client, err := elastic.NewClient(elastic.SetURL(sourceIndexURL), elastic.SetSniff(false))
 	if err != nil {
@@ -32,6 +37,6 @@ func setupRedis(host string) *redis.Client {
 }
 
 func Setup() {
-	ElasticClient = setupElastic("http://es-search-7.fiverrdev.com:9200")
-	RedisClient = setupRedis("redis.default.fiverrdev.com:6382")
+	ElasticClient = setupElastic(elasticConnectionUrl)
+	RedisClient = setupRedis(redisConnectionUrl)
 }
