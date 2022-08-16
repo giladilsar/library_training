@@ -1,7 +1,6 @@
 package server
 
 import (
-	"gin/config"
 	"gin/server/middleware"
 	"gin/service/activity"
 	"gin/service/books"
@@ -17,7 +16,7 @@ func SetupRoutes() *gin.Engine {
 	router.GET("/ping", health.Ping)
 
 	cachedRequests := router.Group("/")
-	cachedRequests.Use(middleware.CacheRequest(config.RedisClient))
+	cachedRequests.Use(middleware.CacheRequest())
 	{
 		cachedRequests.GET("/book/:id", books.GetBook)
 		cachedRequests.PUT("/book", books.CreateBook)

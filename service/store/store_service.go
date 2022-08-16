@@ -1,31 +1,20 @@
 package store
 
 import (
-	"gin/utils"
-	"github.com/gin-gonic/gin"
-	"github.com/olivere/elastic/v7"
+	"gin/repository/book_repository"
 )
 
-const indexName = "gilad_books"
+func fetchStoreDate() (*StoreInfo, error) {
 
-func fetchStoreDate(es *elastic.Client) (gin.H, error) {
-	ctx, cancel := utils.GetContext()
-	defer cancel()
-
-	countResponse, err := es.Count().Index(indexName).Do(ctx)
+	countResponse, err := book_repository.GetBookRepository().Count()
 	if err != nil {
 		return nil, err
 	}
 
-	cardRes, err := es.Search().
-		Index("gilad_books").
-		Aggregation("authors",
-			elastic.NewCardinalityAggregation().
-				Field("author_name.keyword")).
-		Do(ctx)
+	numOfAuthors, err := book_repository.GetBookRepository().CountAuthors()
 	if err != nil {
 		return nil, err
 	}
-	cardinalityValue, _ := cardRes.Aggregations.Cardinality("authors")
-	return gin.H{"number_of_books": countResponse, "number_of_authors": *cardinalityValue.Value}, nil
+
+	return &StoreInfo{NumberOfBooks: countResponse, NumberOfAuthors: *numOfAuthors}, nil
 }

@@ -1,13 +1,12 @@
 package middleware
 
 import (
-	"encoding/json"
 	"gin/models"
+	"gin/repository/activity_repository"
 	"github.com/gin-gonic/gin"
-	"gopkg.in/redis.v5"
 )
 
-func CacheRequest(redisClient *redis.Client) gin.HandlerFunc {
+func CacheRequest() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		req := models.UserRequest{
 			Method: c.Request.Method,
@@ -19,19 +18,9 @@ func CacheRequest(redisClient *redis.Client) gin.HandlerFunc {
 			return
 		}
 
-		reqJson, err := json.Marshal(req)
+		err := activity_repository.GetActivityRepository().SetUserActivity(username, req)
 		if err != nil {
-			return
-		}
-
-		cmd := redisClient.LPush(username, reqJson)
-		if cmd.Err() != nil {
-			return
-		}
-
-		err = redisClient.LTrim(username, 0, 2).Err()
-		if err != nil {
-			return
+			c.Error(err)
 		}
 	}
 }

@@ -3,11 +3,11 @@ package activity
 import (
 	"encoding/json"
 	"gin/models"
-	"gopkg.in/redis.v5"
+	"gin/repository/activity_repository"
 )
 
-func getUserActivity(redisClient *redis.Client, username string) ([]models.UserRequest, error) {
-	response, err := redisClient.LRange(username, 0, 2).Result()
+func getUserActivity(username string) ([]models.UserRequest, error) {
+	response, err := activity_repository.GetActivityRepository().GetUserActivity(username)
 	if err != nil {
 		return nil, err
 	}

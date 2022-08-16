@@ -1,6 +1,6 @@
 package store
 
-type fetchStoreResponse struct {
-	NumOfBooks   int64
-	NumOfAuthors float64
+type StoreInfo struct {
+	NumberOfBooks   int64   `json:"number_of_books"`
+	NumberOfAuthors float64 `json:"number_of_authors"`
 }

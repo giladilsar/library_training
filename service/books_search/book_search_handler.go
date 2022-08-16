@@ -2,7 +2,6 @@ package books_search
 
 import (
 	"fmt"
-	"gin/config"
 	"gin/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -28,7 +27,7 @@ func SearchBook(c *gin.Context) {
 		return
 	}
 
-	books, err := searchBooks(config.ElasticClient, req)
+	books, err := searchBooks(req)
 	if err != nil {
 		c.JSON(utils.GetErrorResponseStatus(err), gin.H{"Error": err.Error()})
 		return

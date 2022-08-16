@@ -2,7 +2,7 @@ package activity
 
 import (
 	"fmt"
-	"gin/config"
+	"gin/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -10,13 +10,13 @@ import (
 func GetActivityByUsername(c *gin.Context) {
 	username := c.Param("username")
 	if username == "" {
-		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("username must be provided"))
+		c.JSON(http.StatusBadRequest, gin.H{"Error": fmt.Errorf("username must be provided")})
 		return
 	}
 
-	res, err := getUserActivity(config.RedisClient, username)
+	res, err := getUserActivity(username)
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.JSON(utils.GetErrorResponseStatus(err), gin.H{"Error": err})
 		return
 	}
 

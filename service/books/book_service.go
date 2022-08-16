@@ -4,21 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"gin/models"
-	"gin/utils"
-	"github.com/gin-gonic/gin"
-	"github.com/olivere/elastic/v7"
+	"gin/repository/book_repository"
 )
 
-const IndexName = "gilad_books"
-
-func getBook(es *elastic.Client, id string) (*models.Book, error) {
-	ctx, cancel := utils.GetContext()
-	defer cancel()
-
-	searchResults, err := es.Get().
-		Index(IndexName).
-		Id(id).
-		Do(ctx)
+func getBook(id string) (*models.Book, error) {
+	searchResults, err := book_repository.GetBookRepository().GetById(id)
 
 	if err != nil {
 		return nil, err
@@ -29,7 +19,7 @@ func getBook(es *elastic.Client, id string) (*models.Book, error) {
 	}
 
 	book := models.Book{Id: id}
-	err = json.Unmarshal(searchResults.Source, &book)
+	err = json.Unmarshal(searchResults.RawData, &book)
 	if err != nil {
 		return nil, err
 	}
@@ -37,22 +27,11 @@ func getBook(es *elastic.Client, id string) (*models.Book, error) {
 	return &book, nil
 }
 
-func deleteBookById(es *elastic.Client, id string) error {
-	ctx, cancel := utils.GetContext()
-	defer cancel()
-
-	_, err := es.Delete().
-		Index(IndexName).
-		Id(id).
-		Do(ctx)
-
-	return err
+func deleteBook(id string) error {
+	return book_repository.GetBookRepository().DeleteById(id)
 }
 
-func createBookFromPayload(es *elastic.Client, req *createBookRequest) (gin.H, error) {
-	ctx, cancel := utils.GetContext()
-	defer cancel()
-
+func createBookFromPayload(req *createBookRequest) (*string, error) {
 	bookToSave := models.Book{
 		Title:          req.Title,
 		AuthorName:     req.AuthorName,
@@ -60,31 +39,10 @@ func createBookFromPayload(es *elastic.Client, req *createBookRequest) (gin.H, e
 		EbookAvailable: req.EbookAvailable,
 		PublishDate:    req.PublishDate,
 	}
-	res, err := es.Index().
-		Index(IndexName).
-		BodyJson(bookToSave).
-		Do(ctx)
 
-	if err != nil {
-		return nil, err
-	}
-
-	return gin.H{"Id": res.Id}, nil
+	return book_repository.GetBookRepository().InsertBook(bookToSave)
 }
 
-func updateBook(es *elastic.Client, req *updateBookRequest) error {
-	ctx, cancel := utils.GetContext()
-	defer cancel()
-
-	_, err := es.Update().
-		Index(IndexName).
-		Id(req.Id).
-		Doc(updateBookTitleCommand{req.Title}).
-		Do(ctx)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+func updateBook(req *updateBookRequest) error {
+	return book_repository.GetBookRepository().UpdateBook(UpdateBookTitleCommand{req.Title}, req.Id)
 }

@@ -13,6 +13,11 @@ type updateBookRequest struct {
 	Title string `json:"title" binding:"required"`
 }
 
-type updateBookTitleCommand struct {
+type UpdateBookTitleCommand struct {
 	Title string `json:"title" binding:"required"`
+}
+
+type SearchResult struct {
+	Found   bool
+	RawData []byte
 }

@@ -1,13 +1,12 @@
 package store
 
 import (
-	"gin/config"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 func GetStoreInfo(c *gin.Context) {
-	res, err := fetchStoreDate(config.ElasticClient)
+	res, err := fetchStoreDate()
 	if err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
 		return
