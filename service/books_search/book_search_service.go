@@ -9,7 +9,7 @@ import (
 func searchBooks(req *bookSearchRequest) ([]models.Book, error) {
 	query := buildQuery(req)
 
-	searchResult, err := book_repository.GetBookRepository().SearchBook(query)
+	searchResult, err := book_repository.NewBookProvider().SearchBook(query)
 
 	if err != nil {
 		return nil, err

@@ -1,8 +1,11 @@
 package books_search
 
-import "github.com/olivere/elastic/v7"
+import (
+	"gin/service/books/dto"
+	"github.com/olivere/elastic/v7"
+)
 
-func buildQuery(req *bookSearchRequest) BookSearchQuery {
+func buildQuery(req *bookSearchRequest) dto.BookSearchQuery {
 	query := elastic.NewBoolQuery()
 	if req.containsPriceFilter() {
 		priceRangeQuery := elastic.NewRangeQuery("price")
@@ -23,5 +26,3 @@ func buildQuery(req *bookSearchRequest) BookSearchQuery {
 
 	return query
 }
-
-type BookSearchQuery elastic.Query

@@ -6,12 +6,12 @@ import (
 
 func fetchStoreDate() (*StoreInfo, error) {
 
-	countResponse, err := book_repository.GetBookRepository().Count()
+	countResponse, err := book_repository.NewBookProvider().Count()
 	if err != nil {
 		return nil, err
 	}
 
-	numOfAuthors, err := book_repository.GetBookRepository().CountAuthors()
+	numOfAuthors, err := book_repository.NewBookProvider().CountAuthors()
 	if err != nil {
 		return nil, err
 	}

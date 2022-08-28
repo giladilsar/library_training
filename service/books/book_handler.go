@@ -2,6 +2,7 @@ package books
 
 import (
 	"fmt"
+	"gin/service/books/dto"
 	"gin/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -35,7 +36,7 @@ func DeleteBook(c *gin.Context) {
 }
 
 func CreateBook(c *gin.Context) {
-	req := &createBookRequest{}
+	req := &dto.CreateBookRequest{}
 	if err := c.ShouldBindWith(&req, binding.JSON); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"Error": fmt.Errorf("failed to bind request - invalid request. %s", err.Error())})
 		return
@@ -52,7 +53,7 @@ func CreateBook(c *gin.Context) {
 
 func UpdateBookTitle(c *gin.Context) {
 	id := c.Param("id")
-	req := &updateBookRequest{Id: id}
+	req := &dto.UpdateBookRequest{Id: id}
 
 	if err := c.ShouldBindWith(&req, binding.JSON); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"Error": fmt.Errorf("failed to bind request - invalid request. %s", err.Error())})

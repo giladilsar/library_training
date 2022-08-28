@@ -3,15 +3,18 @@ package book_repository
 import (
 	"gin/config"
 	"gin/models"
-	"gin/service/books"
-	"gin/service/books_search"
+	"gin/service/books/dto"
 	"gin/utils"
 	"github.com/olivere/elastic/v7"
 )
 
 const IndexName = "gilad_books"
 
-func (r ElasticBookRepository) GetById(id string) (*books.SearchResult, error) {
+type ElasticBookRepository struct {
+	es *elastic.Client
+}
+
+func (r ElasticBookRepository) GetById(id string) (*dto.SearchResult, error) {
 	ctx, cancel := utils.GetContext()
 	defer cancel()
 
@@ -24,7 +27,7 @@ func (r ElasticBookRepository) GetById(id string) (*books.SearchResult, error) {
 		return nil, err
 	}
 
-	return &books.SearchResult{Found: res.Found, RawData: res.Source}, nil
+	return &dto.SearchResult{Found: res.Found, RawData: res.Source}, nil
 }
 
 func (r ElasticBookRepository) DeleteById(id string) error {
@@ -55,7 +58,7 @@ func (r ElasticBookRepository) InsertBook(book models.Book) (*string, error) {
 	return &res.Id, err
 }
 
-func (r ElasticBookRepository) UpdateBook(req books.UpdateBookTitleCommand, id string) error {
+func (r ElasticBookRepository) UpdateBook(req dto.UpdateBookTitleCommand, id string) error {
 	ctx, cancel := utils.GetContext()
 	defer cancel()
 
@@ -68,7 +71,7 @@ func (r ElasticBookRepository) UpdateBook(req books.UpdateBookTitleCommand, id s
 	return err
 }
 
-func (r ElasticBookRepository) SearchBook(query books_search.BookSearchQuery) (*elastic.SearchResult, error) {
+func (r ElasticBookRepository) SearchBook(query dto.BookSearchQuery) (*elastic.SearchResult, error) {
 	ctx, cancel := utils.GetContext()
 	defer cancel()
 
@@ -104,20 +107,6 @@ func (r ElasticBookRepository) CountAuthors() (*float64, error) {
 	return cardinalityValue.Value, nil
 }
 
-type BookRepository interface {
-	GetById(id string) (*books.SearchResult, error)
-	DeleteById(id string) error
-	InsertBook(book models.Book) (*string, error)
-	UpdateBook(req books.UpdateBookTitleCommand, id string) error
-	SearchBook(query books_search.BookSearchQuery) (*elastic.SearchResult, error)
-	Count() (int64, error)
-	CountAuthors() (*float64, error)
-}
-
-type ElasticBookRepository struct {
-	es *elastic.Client
-}
-
-func GetBookRepository() BookRepository {
+func NewBookProvider() BookProvider {
 	return ElasticBookRepository{config.ElasticClient}
 }

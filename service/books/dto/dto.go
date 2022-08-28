@@ -1,6 +1,8 @@
-package books
+package dto
 
-type createBookRequest struct {
+import "github.com/olivere/elastic/v7"
+
+type CreateBookRequest struct {
 	Title          string  `json:"title" binding:"required"`
 	AuthorName     string  `json:"author_name" binding:"required"`
 	Price          float32 `json:"price" binding:"required"`
@@ -8,7 +10,7 @@ type createBookRequest struct {
 	PublishDate    string  `json:"publish_date" binding:"required"`
 }
 
-type updateBookRequest struct {
+type UpdateBookRequest struct {
 	Id    string
 	Title string `json:"title" binding:"required"`
 }
@@ -21,3 +23,5 @@ type SearchResult struct {
 	Found   bool
 	RawData []byte
 }
+
+type BookSearchQuery elastic.Query

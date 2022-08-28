@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"gin/models"
 	"gin/repository/book_repository"
+	"gin/service/books/dto"
 )
 
 func getBook(id string) (*models.Book, error) {
-	searchResults, err := book_repository.GetBookRepository().GetById(id)
+	searchResults, err := book_repository.NewBookProvider().GetById(id)
 
 	if err != nil {
 		return nil, err
@@ -28,10 +29,10 @@ func getBook(id string) (*models.Book, error) {
 }
 
 func deleteBook(id string) error {
-	return book_repository.GetBookRepository().DeleteById(id)
+	return book_repository.NewBookProvider().DeleteById(id)
 }
 
-func createBookFromPayload(req *createBookRequest) (*string, error) {
+func createBookFromPayload(req *dto.CreateBookRequest) (*string, error) {
 	bookToSave := models.Book{
 		Title:          req.Title,
 		AuthorName:     req.AuthorName,
@@ -40,9 +41,9 @@ func createBookFromPayload(req *createBookRequest) (*string, error) {
 		PublishDate:    req.PublishDate,
 	}
 
-	return book_repository.GetBookRepository().InsertBook(bookToSave)
+	return book_repository.NewBookProvider().InsertBook(bookToSave)
 }
 
-func updateBook(req *updateBookRequest) error {
-	return book_repository.GetBookRepository().UpdateBook(UpdateBookTitleCommand{req.Title}, req.Id)
+func updateBook(req *dto.UpdateBookRequest) error {
+	return book_repository.NewBookProvider().UpdateBook(dto.UpdateBookTitleCommand{req.Title}, req.Id)
 }
