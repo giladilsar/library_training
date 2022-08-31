@@ -7,7 +7,6 @@ import (
 
 var (
 	ElasticClient *elastic.Client
-	RedisClient   *redis.Client
 )
 
 const (
@@ -17,20 +16,11 @@ const (
 
 func Setup() {
 	ElasticClient = setupElastic(elasticConnectionUrl)
-	RedisClient = setupRedis(redisConnectionUrl)
 }
 
-func setupElastic(sourceIndexURL string) *elastic.Client {
-	client, err := elastic.NewClient(elastic.SetURL(sourceIndexURL), elastic.SetSniff(false))
-	if err != nil {
-		panic(err)
-	}
-	return client
-}
-
-func setupRedis(host string) *redis.Client {
+func SetupRedis() *redis.Client {
 	client := redis.NewClient(&redis.Options{
-		Addr: host,
+		Addr: redisConnectionUrl,
 	})
 
 	pingError := client.Ping().Err()
@@ -38,5 +28,13 @@ func setupRedis(host string) *redis.Client {
 		panic(pingError)
 	}
 
+	return client
+}
+
+func setupElastic(sourceIndexURL string) *elastic.Client {
+	client, err := elastic.NewClient(elastic.SetURL(sourceIndexURL), elastic.SetSniff(false))
+	if err != nil {
+		panic(err)
+	}
 	return client
 }

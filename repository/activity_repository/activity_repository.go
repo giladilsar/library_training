@@ -5,6 +5,12 @@ import (
 	"gin/config"
 	"gin/models"
 	"gopkg.in/redis.v5"
+	"sync"
+)
+
+var (
+	initRedisClientOnce sync.Once
+	redisClient         *redis.Client
 )
 
 type RedisActivityManager struct {
@@ -12,7 +18,10 @@ type RedisActivityManager struct {
 }
 
 func NewActivityManager() ActivityManager {
-	return RedisActivityManager{config.RedisClient}
+	initRedisClientOnce.Do(func() {
+		redisClient = config.SetupRedis()
+	})
+	return RedisActivityManager{redisClient}
 }
 
 func (rs RedisActivityManager) GetUserActivity(username string) ([]string, error) {
