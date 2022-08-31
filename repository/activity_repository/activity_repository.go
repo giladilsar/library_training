@@ -7,15 +7,19 @@ import (
 	"gopkg.in/redis.v5"
 )
 
-type RedisActivityRepository struct {
+type RedisActivityManager struct {
 	client *redis.Client
 }
 
-func (rs RedisActivityRepository) GetUserActivity(username string) ([]string, error) {
+func NewActivityManager() ActivityManager {
+	return RedisActivityManager{config.RedisClient}
+}
+
+func (rs RedisActivityManager) GetUserActivity(username string) ([]string, error) {
 	return rs.client.LRange(username, 0, 2).Result()
 }
 
-func (rs RedisActivityRepository) SetUserActivity(username string, request models.UserRequest) error {
+func (rs RedisActivityManager) SetUserActivity(username string, request models.UserRequest) error {
 	reqJson, err := json.Marshal(request)
 	if err != nil {
 		return err
@@ -28,8 +32,4 @@ func (rs RedisActivityRepository) SetUserActivity(username string, request model
 
 	err = rs.client.LTrim(username, 0, 2).Err()
 	return err
-}
-
-func NewActivityProvider() ActivityProvider {
-	return RedisActivityRepository{config.RedisClient}
 }

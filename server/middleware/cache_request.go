@@ -18,7 +18,7 @@ func CacheRequest() gin.HandlerFunc {
 			return
 		}
 
-		err := activity_repository.NewActivityProvider().SetUserActivity(username, req)
+		err := activity_repository.NewActivityManager().SetUserActivity(username, req)
 		if err != nil {
 			c.Error(err)
 		}

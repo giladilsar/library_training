@@ -9,7 +9,7 @@ import (
 )
 
 func getBook(id string) (*models.Book, error) {
-	searchResults, err := book_repository.NewBookProvider().GetById(id)
+	searchResults, err := book_repository.NewBookManager().GetById(id)
 
 	if err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func getBook(id string) (*models.Book, error) {
 }
 
 func deleteBook(id string) error {
-	return book_repository.NewBookProvider().DeleteById(id)
+	return book_repository.NewBookManager().DeleteById(id)
 }
 
 func createBookFromPayload(req *dto.CreateBookRequest) (*string, error) {
@@ -41,9 +41,9 @@ func createBookFromPayload(req *dto.CreateBookRequest) (*string, error) {
 		PublishDate:    req.PublishDate,
 	}
 
-	return book_repository.NewBookProvider().InsertBook(bookToSave)
+	return book_repository.NewBookManager().InsertBook(bookToSave)
 }
 
 func updateBook(req *dto.UpdateBookRequest) error {
-	return book_repository.NewBookProvider().UpdateBook(dto.UpdateBookTitleCommand{req.Title}, req.Id)
+	return book_repository.NewBookManager().UpdateBook(dto.UpdateBookTitleCommand{req.Title}, req.Id)
 }

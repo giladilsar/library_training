@@ -7,7 +7,7 @@ import (
 )
 
 func getUserActivity(username string) ([]models.UserRequest, error) {
-	response, err := activity_repository.NewActivityProvider().GetUserActivity(username)
+	response, err := activity_repository.NewActivityManager().GetUserActivity(username)
 	if err != nil {
 		return nil, err
 	}

@@ -8,18 +8,21 @@ import (
 	"github.com/olivere/elastic/v7"
 )
 
-const IndexName = "gilad_books"
-
-type ElasticBookRepository struct {
-	es *elastic.Client
+type ElasticBookManager struct {
+	es        *elastic.Client
+	indexName string
 }
 
-func (r ElasticBookRepository) GetById(id string) (*dto.SearchResult, error) {
+func NewBookManager() BookManager {
+	return ElasticBookManager{config.ElasticClient, "gilad_books"}
+}
+
+func (r ElasticBookManager) GetById(id string) (*dto.SearchResult, error) {
 	ctx, cancel := utils.GetContext()
 	defer cancel()
 
 	res, err := r.es.Get().
-		Index(IndexName).
+		Index(r.indexName).
 		Id(id).
 		Do(ctx)
 
@@ -30,24 +33,24 @@ func (r ElasticBookRepository) GetById(id string) (*dto.SearchResult, error) {
 	return &dto.SearchResult{Found: res.Found, RawData: res.Source}, nil
 }
 
-func (r ElasticBookRepository) DeleteById(id string) error {
+func (r ElasticBookManager) DeleteById(id string) error {
 	ctx, cancel := utils.GetContext()
 	defer cancel()
 
 	_, err := r.es.Delete().
-		Index(IndexName).
+		Index(r.indexName).
 		Id(id).
 		Do(ctx)
 
 	return err
 }
 
-func (r ElasticBookRepository) InsertBook(book models.Book) (*string, error) {
+func (r ElasticBookManager) InsertBook(book models.Book) (*string, error) {
 	ctx, cancel := utils.GetContext()
 	defer cancel()
 
 	res, err := r.es.Index().
-		Index(IndexName).
+		Index(r.indexName).
 		BodyJson(book).
 		Do(ctx)
 
@@ -58,12 +61,12 @@ func (r ElasticBookRepository) InsertBook(book models.Book) (*string, error) {
 	return &res.Id, err
 }
 
-func (r ElasticBookRepository) UpdateBook(req dto.UpdateBookTitleCommand, id string) error {
+func (r ElasticBookManager) UpdateBook(req dto.UpdateBookTitleCommand, id string) error {
 	ctx, cancel := utils.GetContext()
 	defer cancel()
 
 	_, err := r.es.Update().
-		Index(IndexName).
+		Index(r.indexName).
 		Id(id).
 		Doc(req).
 		Do(ctx)
@@ -71,32 +74,32 @@ func (r ElasticBookRepository) UpdateBook(req dto.UpdateBookTitleCommand, id str
 	return err
 }
 
-func (r ElasticBookRepository) SearchBook(query dto.BookSearchQuery) (*elastic.SearchResult, error) {
+func (r ElasticBookManager) SearchBook(query dto.BookSearchQuery) (*elastic.SearchResult, error) {
 	ctx, cancel := utils.GetContext()
 	defer cancel()
 
 	return r.es.Search().
-		Index(IndexName).
+		Index(r.indexName).
 		Query(query).
 		From(0).
 		Size(100).
 		Do(ctx)
 }
 
-func (r ElasticBookRepository) Count() (int64, error) {
+func (r ElasticBookManager) Count() (int64, error) {
 	ctx, cancel := utils.GetContext()
 	defer cancel()
 
-	return r.es.Count().Index(IndexName).Do(ctx)
+	return r.es.Count().Index(r.indexName).Do(ctx)
 }
 
-func (r ElasticBookRepository) CountAuthors() (*float64, error) {
+func (r ElasticBookManager) CountAuthors() (*float64, error) {
 	ctx, cancel := utils.GetContext()
 	defer cancel()
 
 	cardinalityAgg := elastic.NewCardinalityAggregation().Field("author_name.keyword")
 	res, err := r.es.Search().
-		Index(IndexName).
+		Index(r.indexName).
 		Aggregation("authors", cardinalityAgg).
 		Do(ctx)
 	if err != nil {
@@ -105,8 +108,4 @@ func (r ElasticBookRepository) CountAuthors() (*float64, error) {
 
 	cardinalityValue, _ := res.Aggregations.Cardinality("authors")
 	return cardinalityValue.Value, nil
-}
-
-func NewBookProvider() BookProvider {
-	return ElasticBookRepository{config.ElasticClient}
 }

@@ -6,7 +6,7 @@ import (
 	"github.com/olivere/elastic/v7"
 )
 
-type BookProvider interface {
+type BookManager interface {
 	GetById(id string) (*dto.SearchResult, error)
 	DeleteById(id string) error
 	InsertBook(book models.Book) (*string, error)
